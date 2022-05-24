@@ -1,5 +1,15 @@
 <template>
   <div class="gantt-view">
+    <div class="legend-container">
+      <li
+        v-for="(val, key, index) in legendData"
+        :key="index"
+        class="legend-item"
+      >
+        <span :style="{ background: val }" class="legend-color"></span>
+        <span class="legend-text">{{ key }}</span>
+      </li>
+    </div>
     <div ref="gantt" class="ganter-content" />
   </div>
 </template>
@@ -13,7 +23,12 @@ export default {
   props: {},
   data() {
     return {
+      // 甘特图数据
       tasksData: {},
+      // 图例数据
+      legendData: {
+        阶段名: "#65c16f",
+      },
     };
   },
   mounted() {
@@ -276,27 +291,28 @@ export default {
   position: relative;
   height: 500px;
 }
+.legend-container {
+  text-align: right;
+  padding: 0 20px;
+  line-height: 50px;
+}
+.legend-container li {
+  list-style: none;
+}
+.legend-item {
+  margin: 0 5px;
+}
+.legend-color {
+  margin: 0 5px;
+  display: inline-block;
+  height: 20px;
+  width: 30px;
+  vertical-align: middle;
+}
+.legend-text {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
 .ganter-content {
-  height: 100%;
+  height: 400px;
 }
-.process-column {
-  background-color: #1d8a2a !important;
-  border: 2px solid #65c16f !important;
-  background: #65c16f !important;
-}
-// .process-column.gantt_task_content {
-//   background-color: lawngreen !important;
-// }
-// task progress 样式
-// .gantt_task_progress {
-//   background: #46ad51 !important;
-// }
-// task progress text 样式
-// .gantt_task_progress {
-//   text-align: left;
-//   padding-left: 10px;
-//   box-sizing: border-box;
-//   color: white;
-//   font-weight: bold;
-// }
 </style>
