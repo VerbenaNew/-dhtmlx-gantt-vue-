@@ -5,7 +5,9 @@
 </template>
 
 <script>
-import { gantt } from "dhtmlx-gantt";
+import { gantt } from "dhtmlx-gantt"; //依赖
+import "dhtmlx-gantt/codebase/skins/dhtmlxgantt_terrace.css"; //皮肤
+import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
 export default {
   name: "ganttView",
   props: {},
@@ -18,11 +20,9 @@ export default {
     this.organizeSatellite();
   },
   methods: {
-    /**
-     * @description:先组织甘特图所需的数据
-     */
+    // 先组织甘特图所需的数据
     organizeSatellite() {
-      this.tasksData = {
+      const tasksData = {
         data: [
           {
             id: 1,
@@ -31,7 +31,7 @@ export default {
             processName: "阶段名",
             duration: 3,
             progress: 0.6,
-            color: "#1890FF",
+            color: "#1890FF ",
             type: "class",
           },
           {
@@ -118,11 +118,27 @@ export default {
           },
         ],
       };
+      this.tasksData.data = [];
+      tasksData.data.forEach((el) => {
+        let eli = this.organizeColor(el);
+        this.tasksData.data.push(eli);
+      });
       this.initGunter();
     },
-    /**
-     * @description:初始化甘特图
-     */
+    // 组织颜色--可以自定义每个任务阶段的颜色
+    organizeColor(property) {
+      let description = property;
+      switch (property.processName) {
+        case "阶段名":
+          description.color = "#65c16f";
+          break;
+        default:
+          description.color = "#f6f6f6";
+          break;
+      }
+      return description;
+    },
+    // 初始化甘特图
     initGunter() {
       // 甘特图只读
       gantt.config.readonly = true;
@@ -155,7 +171,7 @@ export default {
       //   gantt.config.duration_step = 6
       //   gantt.config.date_scale = '%H: %i'
       // 是否显示依赖连线
-      gantt.config.show_links = false;
+      gantt.config.show_links = true;
       // 隐藏所有标记
       gantt.config.show_markers = true;
       gantt.config.xml_date = "%Y-%m-%d";
@@ -172,6 +188,18 @@ export default {
           format: "%H:%i:%s",
         },
       ];
+      // 添加弹窗属性
+      gantt.config.lightbox.sections = [
+        {
+          name: "description",
+          height: 70,
+          map_to: "text",
+          type: "textarea",
+          focus: true,
+        },
+        { name: "type", type: "typeselect", map_to: "type" },
+        { name: "time", type: "duration", map_to: "auto" },
+      ];
       // 时间线插件
       gantt.plugins({
         drag_timeline: true,
@@ -181,6 +209,18 @@ export default {
         ignore: ".gantt_task_line, .gantt_task_link",
         useKey: false,
       };
+      // task 自定义样式
+      // gantt.templates.task_class = function (start, end, task) {
+      //   console.log(start, end, task);
+      //   switch (task.processName) {
+      //     case "阶段名":
+      //       return "process-column";
+      //     // break;
+      //     case "task":
+      //       return "task-task";
+      //     // break;
+      //   }
+      // };
       // 初始化
       gantt.init(this.$refs.gantt);
       // 绘制甘特图
@@ -232,14 +272,31 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 
 <style lang="scss" scoped>
-@import "~dhtmlx-gantt/codebase/dhtmlxgantt.css";
-
 .gantt-view {
   position: relative;
   height: 500px;
 }
-
 .ganter-content {
   height: 100%;
 }
+.process-column {
+  background-color: #1d8a2a !important;
+  border: 2px solid #65c16f !important;
+  background: #65c16f !important;
+}
+// .process-column.gantt_task_content {
+//   background-color: lawngreen !important;
+// }
+// task progress 样式
+// .gantt_task_progress {
+//   background: #46ad51 !important;
+// }
+// task progress text 样式
+// .gantt_task_progress {
+//   text-align: left;
+//   padding-left: 10px;
+//   box-sizing: border-box;
+//   color: white;
+//   font-weight: bold;
+// }
 </style>
