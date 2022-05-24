@@ -203,18 +203,23 @@ export default {
           format: "%H:%i:%s",
         },
       ];
-      // 添加弹窗属性
-      gantt.config.lightbox.sections = [
-        {
-          name: "description",
-          height: 70,
-          map_to: "text",
-          type: "textarea",
-          focus: true,
-        },
-        { name: "type", type: "typeselect", map_to: "type" },
-        { name: "time", type: "duration", map_to: "auto" },
-      ];
+      // 添加tooltip提示框
+      gantt.plugins({
+        tooltip: true,
+        lightbox: true,
+      });
+      // // 添加灯箱属性
+      // gantt.config.lightbox.sections = [
+      //   {
+      //     name: "description",
+      //     height: 70,
+      //     map_to: "text",
+      //     type: "textarea",
+      //     focus: true,
+      //   },
+      //   { name: "type", type: "typeselect", map_to: "type" },
+      //   { name: "time", type: "duration", map_to: "auto" },
+      // ];
       // 时间线插件
       gantt.plugins({
         drag_timeline: true,
