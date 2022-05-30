@@ -1,6 +1,13 @@
 <template>
   <div class="gantt-view">
     <div class="legend-container">
+      <el-radio-group v-model="radioTime">
+        <el-radio :label="2">2小时</el-radio>
+        <el-radio :label="4">4小时</el-radio>
+        <el-radio :label="8">8小时</el-radio>
+        <el-radio :label="12">12小时</el-radio>
+        <el-radio :label="24">24小时</el-radio>
+      </el-radio-group>
       <li
         v-for="(val, key, index) in legendData"
         :key="index"
@@ -10,31 +17,62 @@
         <span class="legend-text">{{ key }}</span>
       </li>
     </div>
-    <div ref="gantt" class="ganter-content" />
+    <div ref="gantt" class="ganter-content"></div>
+    <SatelliteMessage
+      v-if="detailModel"
+      @showTable="showTable"
+      @closeMessage="closeMessage"
+    ></SatelliteMessage>
+    <ParamTable v-if="tableModel" @closeTable="closeTable"></ParamTable>
   </div>
 </template>
 
 <script>
+import SatelliteMessage from "./SatelliteMessage";
+import ParamTable from "./ParamTable";
+
 import { gantt } from "dhtmlx-gantt"; //依赖
 import "dhtmlx-gantt/codebase/skins/dhtmlxgantt_terrace.css"; //皮肤
 import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
 export default {
   name: "ganttView",
   props: {},
+  components: {
+    SatelliteMessage: SatelliteMessage,
+    ParamTable: ParamTable,
+  },
   data() {
     return {
       // 甘特图数据
       tasksData: {},
+      // 时间间隔
+      radioTime: 24,
       // 图例数据
       legendData: {
         阶段名: "#65c16f",
       },
+      // 是否展示详情
+      detailModel: false,
+      // 是否展示参数对应的详细表格
+      tableModel: false,
     };
   },
   mounted() {
     this.organizeSatellite();
   },
   methods: {
+    // 展示表格数据
+    showTable() {
+      this.tableModel = true;
+    },
+    // 关闭表格框
+    closeTable() {
+      this.tableModel = false;
+    },
+    // 关闭信息框
+    closeMessage() {
+      this.detailModel = false;
+    },
     // 先组织甘特图所需的数据
     organizeSatellite() {
       const tasksData = {
@@ -42,12 +80,13 @@ export default {
           {
             id: 1,
             text: "分类1",
-            start_date: "2020-12-15",
+            // start_date: "2020-12-15",
             processName: "阶段名",
-            duration: 3,
-            progress: 0.6,
+            // duration: 3,
+            // progress: 0.6,
             color: "#1890FF ",
             type: "class",
+            render: "split",
           },
           {
             id: 2,
@@ -58,6 +97,7 @@ export default {
             progress: 0.4,
             color: "#1890FF ",
             type: "class",
+            render: "split",
           },
           {
             id: 3,
@@ -68,6 +108,7 @@ export default {
             progress: 0.2,
             color: "#1890FF ",
             type: "class",
+            render: "split",
           },
           {
             id: 4,
@@ -78,6 +119,7 @@ export default {
             progress: 0,
             color: "#1890FF ",
             type: "class",
+            render: "split",
           },
           {
             id: 5,
@@ -103,7 +145,7 @@ export default {
           },
           {
             id: 7,
-            text: "名称",
+            text: "名称1",
             start_date: "2020-12-21",
             processName: "阶段名",
             duration: 3,
@@ -111,16 +153,39 @@ export default {
             color: "#1890FF ",
             parent: 1,
             type: "task",
+            render: "split",
           },
           {
             id: 8,
-            text: "名称",
-            start_date: "2020-12-21",
+            text: "名称2",
+            start_date: "2020-12-25",
             processName: "阶段名",
             duration: 3,
             progress: 0,
             color: "#1890FF ",
-            parent: 2,
+            parent: 7,
+            type: "task",
+          },
+          {
+            id: 9,
+            text: "名称3",
+            start_date: "2020-12-14",
+            processName: "阶段名",
+            duration: 3,
+            progress: 0,
+            color: "#1890FF ",
+            parent: 7,
+            type: "task",
+          },
+          {
+            id: 10,
+            text: "名称4",
+            start_date: "2020-12-31",
+            processName: "阶段名",
+            duration: 3,
+            progress: 0,
+            color: "#1890FF ",
+            parent: 7,
             type: "task",
           },
         ],
@@ -229,6 +294,8 @@ export default {
         ignore: ".gantt_task_line, .gantt_task_link",
         useKey: false,
       };
+      //
+      gantt.config.open_split_tasks = true;
       // task 自定义样式
       // gantt.templates.task_class = function (start, end, task) {
       //   console.log(start, end, task);
@@ -284,6 +351,7 @@ export default {
     orbitBySatellite(id) {
       const satellite = id;
       console.log(satellite);
+      this.detailModel = true;
     },
   },
 };
@@ -297,12 +365,14 @@ export default {
   height: 500px;
 }
 .legend-container {
+  display: inline-block;
   text-align: right;
   padding: 0 20px;
   line-height: 50px;
 }
 .legend-container li {
   list-style: none;
+  display: inline-block;
 }
 .legend-item {
   margin: 0 5px;
